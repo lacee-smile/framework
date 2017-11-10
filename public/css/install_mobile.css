@@ -2,7 +2,7 @@ body
 {
 	 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
    width: 100%;
-   position:fixed;
+   position:absolute;
 }
 
 .indexDatas
@@ -12,9 +12,10 @@ body
   width: 50%;
   left: 25%;
 }
-input, button
+.indexDatas > button
 {
-	margin-top:15px;
+  font-size:60px;
+	margin-top:25px;
 }
 #dataHolder
 {
@@ -24,11 +25,20 @@ input, button
   margin: 0;
   padding: 0;
 }
+
+#dataHolder > input
+{
+  height:75px;
+  font-size: 60px;
+  margin-top:35px;
+}
 .indexTitle
 {
-	font-size:22px;
+	font-size:75px;
 	color:grey;
 	text-align: center;
+  margin-bottom:20px;
+  margin-top:20px;
 }
 
 @media screen and (max-width: 980px)
@@ -62,7 +72,7 @@ input, button
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     padding: 6px 12px;
-    font-size:16px;
+    font-size:35px;
     margin-top:15px;
     color: #555;
     background-color: #fff;
@@ -81,7 +91,7 @@ input, button
 	display: inline-block;
   padding: 6px 12px;
   margin-bottom: 0;
-  font-size: 18px;
+  font-size: 40px;
   font-weight: normal;
   text-align: center;
   white-space: nowrap;
@@ -99,5 +109,55 @@ input, button
   color: #fff;
   background-color: #337ab7;
   border-color: #2e6da4;
-  text-decoration: none;
+}
+.del_inst
+{
+	margin-top:15px;
+	display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  width:100%;
+  color: #fff;
+  background-color: #ffb366;
+  border-color: #ff8c1a;
+}
+
+.refresh
+{
+	margin-top:15px;
+	display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  width:100%;
+  color: #fff;
+  background-color: #80dc6b;
+  border-color: #399b24;
 }

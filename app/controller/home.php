@@ -7,7 +7,6 @@ class home extends Controller
 	public function index()
 	{		
 		if(file_exists("../app/controller/install.php"))
-			//require_once "../app/controller/install.php";
 			header("Location: /install");
 		/*
 		* 	

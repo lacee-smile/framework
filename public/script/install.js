@@ -1,112 +1,134 @@
-function start()
+function get(ID){return document.getElementById(ID);}
+function remA(obj, attr){obj.removeAttribute(attr);}
+var InstallPhase = 0;
+var spamDefender = 0;
+var Operation = ["database","admin","office"];
+var ErrorText =
+[
+	[
+		"Üresen hagyta a szerver nevét!",
+		"Üresen hagyta a szerver felhasználónevét!",
+		"Üresen hagyta a szerver jelszavát!"
+	],
+	[
+		"Üresen hagyta a teljes nevét!",
+		"Üresen hagyta a felhasználónevét!",
+		"Üresen hagyta a jelszavát!",
+		"Üresen hagyta a jelszó megerősítését!",
+		"A jelszónak legalább 8 karakternek kell lennie!",
+		"Nem egyeznek meg a jelszavak!"
+	],
+	[
+		"Üresen hagyta az iroda nevét!",
+		"Üresen hagyta az iroda címét!"
+	]
+];
+
+function dataCheck()
 {
-	var param = "";
-	var server = getName("server")[0];
-	var user = getName("user")[0];
-	var password = getName("password")[0];
-	server.style.backgroundColor = "#FFFFFF";
-	user.style.backgroundColor = "#FFFFFF";
-	password.style.backgroundColor = "#FFFFFF";
+	var i = 0;
+	var data = new Array();
 	try
-	{
-		if(server.value == "") throw server;
-		if(user.value == "") throw user;
-		param = "server="+server.value+"&user="+user.value
-		if(password.value != "")
-		param += "&pass="+password.value;
-		Create_Database(param);
-	}
-	catch(e)
-	{
-		e.style.backgroundColor = "#fcc";
-	}
-}
-
-function Create_Database(p)
-{
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST","/install/database",true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send(p);
-	xhttp.onreadystatechange = function()
-	{
-	    if (this.readyState == 4 && this.status == 200)
-	    {
-			DoThis(this.responseText);
-	    }
-    };
-}
-
-function add_New_Admin(p)
-{
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "addadmin.php", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.onreadystatechange = function()
-	{
-	    if (this.readyState == 4 && this.status == 200)
-	    {
-			DoThis(this.responseText);
-	    }
-    };
-	xhttp.send(p);
-}
-function Del_Dir()
-{
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function()
-	{
-	    if (this.readyState == 4 && this.status == 200)
-	    {
-			DoThis(this.responseText);
-	    }
-    };
-  xhttp.open("GET", "deldir.php", true);
-  xhttp.send();
-}
-function DoThis(str)
-{
-	if(str != "OK")
-	document.getElementById("end").innerHTML = str;
-	else ChangeAll();
-}
-
-window.onload = OnLoad
-function OnLoad()
-{
-	onFocus(CName("form-control")[0]);
-}
-
-function ChangeAll()
-{
-	del(CName("indexDatas")[0]);
-	CName("indexDatas")[0].removeAttribute("style");
-	onFocus(CName("form-control")[0]);
-}
-
-function addNewAdmin()
-{
-	try
-	{
-		if(!getName("adminname")[0].value) throw "Kérem töltse ki a teljes nevét!";
-		if(!getName("user")[0].value) throw "Kérem töltse ki a felhasználó nevét!";
-		if(!getName("password")[0].value || !getName("password")[1].value) throw "Kérem adja meg a jelszavát!";
-		if(getName("password")[0].value != getName("password")[1].value) throw "Nem egyeznek meg a jelszavak!";
-	/*	if(getName("password")[0].value.length < 8 ) throw "A jelszónak legalább 8 karakternek kell lennie!"; */ // aktiváld ha már kell
-		else
 		{
-			param = "name="+getName("adminname")[0].value+"&user="+getName("user")[0].value+"&pw="+getName("password")[0].value;;
-			add_New_Admin(param);
+			var tmp = new Array();
+			for(i = 0; i < $('input').length; i++)
+			{
+				tmp = [$('input')[i],$('input').eq(i).val()];
+				if(InstallPhase == 0 && i==2 && (tmp[1] == null || tmp[1] == ''))	// szerver, nincs jelszó
+				{
+					var EmptyPass = confirm("Biztosan üresen akarja hagyni a szerver jelszavát?");
+					if(!EmptyPass) throw tmp[0]
+				}
+				else if(tmp[1] == null || tmp[1] == '')	// mindegyik mező ellenőrzése (kivétel 1.  screen 3. mező)
+					throw tmp[0];
+				if(InstallPhase == 1 && i == 2) // a felhasználó jelszavának első mezője
+				{
+					if(tmp[1] == null || tmp[1] == '')
+					{
+						throw tmp[0];
+					}
+					if(tmp[1].length < 8)	// legalább 8 karakteres jelszó
+					{
+						i = 4;
+						throw tmp[0];
+					}
+					if(tmp[1] !== $('input').eq(3).val())	// nem egyeznek meg a jelszavak
+					{
+						i = 5;
+						throw $('input')[3];
+					}
+				}
+				else data.push(tmp[1]);
+			}
+			return data;
+		}
+	catch(obj)
+		{
+			obj.style.backgroundColor = "#ffa5a5";
+			obj.onclick = function(){remA(obj,"style")};
+			alert(ErrorText[InstallPhase][i]);
+			return false;
+		}
+}
+
+function SendDatas(datas)
+{
+	var that = this;
+	$.post("/install/" + Operation[InstallPhase],
+	    {
+	    	datas
+	    },
+	    function(data)
+	    {
+	    	data = JSON.parse(data);
+	    	
+	    	if(data[0])
+	    	{
+	    		that.spamDefender = 0;
+	    		if(that.InstallPhase == 2)
+	    		{
+	    			$(".indexDatas").html(data[1])
+	    		}
+	    		else 
+	    		{
+	    			get("dataHolder").innerHTML = data[1];
+	    			$('input')[0].focus();
+	    		}
+	    		that.InstallPhase++;
+	    	}
+	    	else
+	    	{
+	    		get("end").innerHTML = data[1];
+	    	}
+
+	    });
+}
+
+$(function(){$('button').click(function()
+	{
+		values = dataCheck();
+		if(values)
+		{
+			SendDatas(values);
+			get("end").innerHTML = "";
 		}
 	}
-	catch(e)
-	{
-		document.getElementById("end").innerHTML = e;
-	}
-}
+)});
 
-function CName(classname){return document.getElementsByClassName(classname)}
-function getName(nm){return document.getElementsByName(nm)}
-function del(obj){obj.parentNode.removeChild(obj)}
-function onFocus(obj){obj.focus();}
-function get(ID){return document.getElementById(ID);}
+$(document).ready(function()
+{
+	$.browser = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+	if($.browser)
+	{
+		$('link').attr("href","css/install_mobile.css");
+	}
+	$('input')[0].focus();
+	$(document).bind('keypress', function(e)
+	{
+	    if(e.keyCode==13 && spamDefender < 5)
+	    	{
+	    		$("button").trigger("click");
+			    spamDefender++;
+			}
+	});
+})
