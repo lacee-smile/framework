@@ -1,2 +1,6 @@
 # MyProgram
-this program created just for fun. it may contains bugs and issues, so don't check it. :D
+Hello, this is my first program on Github.
+Program language is hungarian.
+Before you tested, rename each "htaccess.dll" file to ".htaccess" (point at the beginning).
+If you use linux, you must type "sudo a2enmod rewrite" to console, and set AllowOverride to "All" in apache config file.
+Sorry for bad english. :(
