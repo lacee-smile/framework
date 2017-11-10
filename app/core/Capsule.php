@@ -28,35 +28,104 @@ class Capsule
 
 	private function Connect()
 	{
-		global $server, $user, $pw, $db;
-		$connect = new mysqli($server, $user, $pw, $db);
-		if ($connect -> connect_errno)
-    	{
-           $this -> Log(0, [$connect -> connect_error, basename(__FILE__), basename(__LINE__-3)]);
-           echo $connect -> connect_error;
-           die();
-        }
-        $connect -> set_charset("utf8");
-		return $connect;
-	}
-
-	private function Process($obj)
-	{
-		while($row = $obj -> fetch_array(MYSQL_NUM)) $arr[] = $row;
-		return $arr;
+		global $server, $db, $user, $pw;
+		try
+		{
+			$conn = new PDO("mysql:host=$server;dbname=$db;charset=utf8", $user, $pw);
+			$conn -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			return $conn;
+    	}
+		catch(PDOException $e)
+		{
+			echo "Connecion failed: " . $e -> getMessage();
+		}
 	}
 
 	private function Download($str)
 	{
-		$result = $this -> Connect() -> query($str);
-		$result = $this -> Process($result);
-		$this -> Connect() -> close();
-		return $result;
+		$pdo = $this -> Connect();
+		$result = $pdo -> query($str);
+		$result = $result -> fetchAll();
+		if(empty($result))
+			{
+				// nincs eredménye a lekérdezésnek
+				return false;
+			}
+		else
+			{
+				return $result;
+			}
 	}
 
-	public function Upload($str)
+	public function AddUser($datas)
 	{
-		$this -> Connect() -> query($str);
+		if(self::CheckExistsUser($datas["username"])) return false;
+		$sql = $this -> Connect() -> prepare("
+			insert into users 
+			(
+				name,
+				username,
+				beosztas,
+				password,
+				irodahaz
+			)
+			values
+			(
+				:name,
+				:username,
+				:type,
+				:password,	
+				:office
+			)");
+		$sql -> execute($datas);
+		$sql = null;
+		return true;
+	}
+
+	private function CheckExistsUser($username)
+	{
+		$result = $this -> Download("select * from users where username like '$username'");
+		return $result ? true : false;
+	}
+
+	public function AddNewOffice($datas = ["name", "address"])
+	{
+		if(self::CheckExistsOffice($datas["name"], $datas["address"])) return false;
+		$sql = $this -> Connect() -> prepare("
+			insert into irodahaz
+			(
+				neve,
+				cime,
+				prevmonth,
+				nextmonth,
+				a_consolerefresh,
+				a_errorrefresh,
+				userrefresh,
+				bossrefresh
+			)
+			values
+			(
+				:name,
+				:address,
+				6,
+				6,
+				30,
+				30,
+				120,
+				5
+			);");
+		$sql -> execute($datas);
+		$sql = null;
+		return true;
+	}
+
+	private function CheckExistsOffice($name, $address)
+	{
+		$result = $this -> Download("select * from irodahaz where neve like '$name'");
+		if($result) return true; // irodanév foglalt
+		$result = $this -> Download("select * from irodahaz where cime like '$address'");
+		if($result) return true; // iroda cím foglalt
+		return false; // iroda még nincs hozzáadva
 	}
 
 	public function LoginRequest($username, $pw)
@@ -64,8 +133,11 @@ class Capsule
 		if (!empty($_SERVER['HTTP_CLIENT_IP'])) $ip = $_SERVER['HTTP_CLIENT_IP'];
 		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 		else $ip = $_SERVER['REMOTE_ADDR'];
-		$sql = "select password, name, beosztas, irodahaz from users where username = '$username' ";
-		$result = $this -> Download($sql);
+		/*$sql = "select password, name, beosztas, irodahaz from users where username = '$username' ";
+		$result = $this -> Download($sql);*/
+		$sql = $this -> Connect() -> prepare("select password, name, beosztas, irodahaz from users where username = :username ");
+		$sql -> bindParam(':username', $username);
+		$result = $this -> Process($sql -> execute());
 		$result = $result[0];
 		if($pw === $result[0])
 			{
@@ -81,10 +153,6 @@ class Capsule
 
 	public function GetConf($iroda)
 	{
-		$sql = "select settings from irodahaz where iroda_id = " . $iroda;
-		$result = $this -> Download($sql);
-		var_dump($result);die();
-		return $result[0];
 	}
 }
 ?>
