@@ -41,25 +41,9 @@ class Capsule
 		}
 	}
 
-	private function Download($str)
+	/*public function AddUser($datas)
 	{
-		$pdo = $this -> Connect();
-		$result = $pdo -> query($str);
-		$result = $result -> fetchAll();
-		if(empty($result))
-			{
-				// nincs eredménye a lekérdezésnek
-				return false;
-			}
-		else
-			{
-				return $result;
-			}
-	}
-
-	public function AddUser($datas)
-	{
-		if(self::CheckExistsUser($datas["username"])) return false;
+		if(self::SearchUser($datas["username"])) return false;
 		$sql = $this -> Connect() -> prepare("
 			insert into users 
 			(
@@ -82,15 +66,10 @@ class Capsule
 		return true;
 	}
 
-	private function CheckExistsUser($username)
-	{
-		$result = $this -> Download("select * from users where username like '$username'");
-		return $result ? true : false;
-	}
 
-	public function AddNewOffice($datas = ["name", "address"])
+	public function AddNewOffice($datas = ["name" => "", "address" => ""])
 	{
-		if(self::CheckExistsOffice($datas["name"], $datas["address"])) return false;
+		if(self::SearchOffice($datas["name"], $datas["address"])) return false;
 		$sql = $this -> Connect() -> prepare("
 			insert into irodahaz
 			(
@@ -119,40 +98,138 @@ class Capsule
 		return true;
 	}
 
-	private function CheckExistsOffice($name, $address)
+	public function SearchOffice($name, $address)
 	{
-		$result = $this -> Download("select * from irodahaz where neve like '$name'");
-		if($result) return true; // irodanév foglalt
-		$result = $this -> Download("select * from irodahaz where cime like '$address'");
-		if($result) return true; // iroda cím foglalt
-		return false; // iroda még nincs hozzáadva
+		return $this -> Download(4, ["name" => $name, "address" => $address]) ? true : false;
+		// return true, ha az iroda neve vagy címe már használatban van
 	}
 
-	public function LoginRequest($username, $pw)
+	public function CustomSQL($letsee = [], $condition = [])
 	{
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) $ip = $_SERVER['HTTP_CLIENT_IP'];
-		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		else $ip = $_SERVER['REMOTE_ADDR'];
-		/*$sql = "select password, name, beosztas, irodahaz from users where username = '$username' ";
-		$result = $this -> Download($sql);*/
-		$sql = $this -> Connect() -> prepare("select password, name, beosztas, irodahaz from users where username = :username ");
-		$sql -> bindParam(':username', $username);
-		$result = $this -> Process($sql -> execute());
-		$result = $result[0];
-		if($pw === $result[0])
+		/*******************************
+		*	how to use
+		*	- az első tömbbre csak írd bele h melyik mezőket akarod látni
+		*	- a másidik tömbbe írd bele, h melyik mező minek feleljen meg (where feltétel)
+		*	- sehol nem kell táblanevet írni, megkeresi magának a program.
+		*	- csak akkor működik, ha az adatbázisba nincs 2 egyforma nevű oszlop!!!
+		********************************/
+	/*	$tables = $this -> SearchTable($letsee);
+		$already_joined = false;
+		$join = "";
+		if(count($tables) > 1)	// ha az elsőben több van felsorolva, működik
+		{
+			$table = "users";
+			$others = array_filter($tables,function($str){return $str != "users";});
+			if(count($others) > 1)
 			{
-				$this -> Log(1, [$username, $ip]);
-				return $result;
+				$join = $this -> SelectJoiner("each");
+				$already_joined = true;
 			}
+			else
+				$join = $this -> SelectJoiner($others[0]);
+		}
+		else $table = $tables[0];
+
+		$c_table = $this -> SearchTable([$condition[0]]);
+		if(!$already_joined) $join .= $this -> SelectJoiner($c_table);
+		$condition = "where " . $c_table[0] . ".$condition[0] like '$condition[1]'";
+
+		$sql = "select " .  join(", ",$letsee) . " from " . $table . " " . $join . " " . $condition;
+		$table = $this -> Connect() -> query($sql) -> fetchAll(PDO::FETCH_NUM);
+		return $table[0];
+//	}
+
+	private function SearchTable($arr)
+	{
+		global $db;
+		$sql = "SELECT TABLE_NAME FROM information_schema.columns WHERE column_name in ('" . join("', '", $arr) . "') and TABLE_SCHEMA like '$db'";
+		$table = $this -> Connect() -> query($sql) -> fetchAll(PDO::FETCH_NUM);
+		return array_map('current', $table);
+	}
+
+	private function SelectJoiner($str)
+	{
+		$joiner = 
+		[
+			"inner join szabadsag on users.username = szabadsag.user_name ",
+			"inner join irodahaz on users.irodahaz = irodahaz.iroda_id "
+		];
+		if($str == "szabadsag")
+			return $joiner[0];
+		elseif($str == "each")
+			return implode(' ', $joiner);
 		else
-			{
-				$this -> Log(3, [$username, $ip]);
-				return false;
-			}
+			return $joiner[1];
 	}
 
-	public function GetConf($iroda)
+	public function SearchUser($str)
 	{
+		$result = $this -> Download(6, ["username" => $str]);
+		return $result ? array_map('current', $result) : false;
+	}*/
+	private function Download($func, $data)
+	{
+		$sql = $this -> Connect() -> prepare( $this -> SelectQuery($func) );
+		$sql -> execute($data);
+		return $sql -> fetchAll(PDO::FETCH_NUM);
+	}
+
+	private function SelectQuery($func)
+	{
+		$str = '';
+		switch($func)
+		{
+			case 0:
+				$str = "select password, name, beosztas, irodahaz from users where username like :username";
+					break;
+
+			case 1:
+				$str = "select prevmonth, nextmonth, userrefresh from irodahaz where iroda_id = :iroda";
+					break;
+
+			case 2:
+				$str = "select prevmonth, nextmonth, bossrefresh from irodahaz where iroda_id = :iroda";
+					break;
+
+			case 3:
+				$str = "select * from irodahaz where iroda_id = :iroda";
+					break;
+
+			case 4:
+				$str = "select neve, cime, iroda_id from irodahaz where neve like :name or cime like :address";
+					break;
+
+			case 5:
+				$str = "select * from users where username like :username";
+					break;
+
+			case 6:
+				$str = "select username from users where username like :username";
+					break;
+		}
+		return $str;
+	}
+
+	public function LoginRequest($username = "", $pw="")
+	{
+		/*if (!empty($_SERVER['HTTP_CLIENT_IP'])) $ip = $_SERVER['HTTP_CLIENT_IP'];
+		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		else $ip = $_SERVER['REMOTE_ADDR'];*/
+
+
+		$result = $this -> Download(0, ["username" => $username]);
+
+		if(empty($result))	return false;	// nincs ilyen nevű felhasználó
+		else $result = $result[0];
+		if($pw == $result[0])	// van ilyen felhasználó, jelszó ellenőrzés
+			return $result;
+		else return false;
+	}
+
+	public function GetConf()
+	{
+		$result = $this -> Download($_SESSION["beosztas"], ["iroda" => $_SESSION['iroda']]);
+		return $result[0];
 	}
 }
 ?>

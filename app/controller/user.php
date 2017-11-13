@@ -6,8 +6,8 @@ class user extends Controller
 {
 	public function index()
 	{
-		$this -> model("user");
-		echo "bejelentkezett mint " . $this -> name;
+		$user = $this -> model("usermodel");
+		echo "bejelentkezett mint " . $user -> name;
 		//$this -> view("user/logoutbutton");
 	}
 }

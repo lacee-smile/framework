@@ -66,6 +66,7 @@ function dataCheck()
 		{
 			obj.style.backgroundColor = "#ffa5a5";
 			obj.onclick = function(){remA(obj,"style")};
+			obj.focus();
 			alert(ErrorText[InstallPhase][i]);
 			return false;
 		}
@@ -84,17 +85,14 @@ function SendDatas(datas)
 	    	
 	    	if(data[0])
 	    	{
+	    		
+	    		if(that.InstallPhase == 2) $(".indexDatas").html(data[1])
+	    		else get("dataHolder").innerHTML = data[1];
+	    			
 	    		that.spamDefender = 0;
-	    		if(that.InstallPhase == 2)
-	    		{
-	    			$(".indexDatas").html(data[1])
-	    		}
-	    		else 
-	    		{
-	    			get("dataHolder").innerHTML = data[1];
-	    			$('input')[0].focus();
-	    		}
 	    		that.InstallPhase++;
+	    		EnterHandler();
+	    		$('input')[0].focus();
 	    	}
 	    	else
 	    	{
@@ -106,6 +104,7 @@ function SendDatas(datas)
 
 $(function(){$('button').click(function()
 	{
+		$("button").blur();
 		values = dataCheck();
 		if(values)
 		{
@@ -115,6 +114,29 @@ $(function(){$('button').click(function()
 	}
 )});
 
+function EnterHandler()
+{
+	$("input").bind('keypress', function(e)
+	{
+		$("button").blur();
+	    if(e.keyCode == 13)
+	    	{
+	    		if(spamDefender < 5)
+	    		{
+		    		$("button").trigger("click");
+				    spamDefender++;
+				    if(spamDefender == 5)
+				    	alert("Túl sokszor nyomott enter-t, a program védelme érdekében manuális beavatkozásig letiltom a funkciót!");
+				}
+				else
+				{
+
+					e.preventDefault();
+				}
+			}
+	});
+}
+
 $(document).ready(function()
 {
 	$.browser = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
@@ -123,12 +145,6 @@ $(document).ready(function()
 		$('link').attr("href","css/install_mobile.css");
 	}
 	$('input')[0].focus();
-	$(document).bind('keypress', function(e)
-	{
-	    if(e.keyCode==13 && spamDefender < 5)
-	    	{
-	    		$("button").trigger("click");
-			    spamDefender++;
-			}
-	});
+	EnterHandler();
+
 })

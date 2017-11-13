@@ -1,3 +1,3 @@
 <?php
-echo "hi, my name is logout";
+echo "hi, my name is logoutbutton, i only appear to logged user! :3";
 ?>

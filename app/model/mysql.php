@@ -90,7 +90,7 @@ class mysql extends Capsule
 			'username' => $data[1],
 			'type' => 'admin',
 			'password' => hash("md5",$data[2]),
-			'office' => 0
+			'office' => 1
 		]);
 		return $result;
 	}

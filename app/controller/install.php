@@ -1,7 +1,7 @@
 <?php
 class install extends Controller
 {
-	private $db = "szabadsagolas"; // rewrite this to change database name
+	private $db = "szabadsagolas";
 	private $appears = null;
 	private $mysql = null;
 

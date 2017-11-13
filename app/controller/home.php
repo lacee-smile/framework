@@ -4,37 +4,58 @@
 */
 class home extends Controller
 {
+	public $user = null;
+
 	public function index()
-	{		
+	{
+		session_start();
 		if(file_exists("../app/controller/install.php"))
+		{
+			/*
+				not installed database
+			*/
 			header("Location: /install");
-		/*
-		* 	
-		*/
-		else $this -> view('home/index');
+		}
+		elseif(empty($_SESSION["username"]))
+		{
+			/*
+				installed database, home screen
+			*/
+			$this -> view('home/index', ["heading", "LoginForm"]);
+		}
+		else
+		{
+			echo json_encode([true, $_SESSION["username"]]);
+			header("Location: /".$this ->username);
+		}
 	}
 
 	public function login()
 	{
-		$login = $this -> model("login");
-		$result = $login -> request();
+		if(!isset($_POST['username'])) header("Location: /");
+		else $result = $this -> model("login") -> request();
 		if($result)
 		{
-			/*
-			*	
-			*/
-			$this -> model("user") -> Save($result);
-			/*session_start();
-			$_SESSION["logged_in"] = true;
-			$_SESSION["psw"] = $result[0];
-			$_SESSION["name"] = $result[1];
-			$_SESSION["beosztas"] = $result[2];
-			$_SESSION["iroda"] = $result[3];*/
-			header("Location: /user");
+			$this -> user = $this -> model("usermodel");
+			$this -> user -> Save($result);
+			header("Location: /" . $_SESSION["username"]);
+
+			/*$this -> model("usermodel") -> Save($result); 
+			header("Location: /" . $result["name"]);
+			/******************************************
+			*		sikertes bejelentkezés
+			********************************************/
 		}
 		else
 		{
-			header("Location: ../");
+			unset($_POST);
+			echo json_encode([false, 'Hibás felhasználónév vagy jelszó!']);
+			$this -> view('home/index');
+			session_start();
+			session_destroy();	// amíg nincs logout, addig ez jelentkeztet ki /home/login bárhonnan
+			/******************************************
+			*		sikertelen bejelentkezés
+			********************************************/
 		}
 	}
 }

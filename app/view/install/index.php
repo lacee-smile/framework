@@ -48,7 +48,7 @@ class install_view
 	public function EndInstall()
 	{
 		$str = '<p class="indexTitle">A telepítés sikeres, minden megadott adat mentésre került!</p>
-		<a href="/" class="btn">Weboldal megtekintése</a>
+		<input type="button" onclick="location.href=' .  "'/home'" . ';" class="btn" value="Weboldal megtekintése"/>
 		<div class="EndText indexTitle" id="end"></div>';
 		return $str;
 	}
