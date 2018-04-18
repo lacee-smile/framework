@@ -1,6 +1,3 @@
-<link rel="stylesheet" type="text/css" href="css/calendar.css" />
-<script src="script/jQuery.js" language="javascript"></script>
-<script src="script/calendar.js" language="javascript"></script>
 <?php
 mb_internal_encoding("UTF-8");
 class calendar
@@ -31,6 +28,14 @@ class calendar
 		"6" => "Szombat",
 		"7" => "Vasárnap"
 	);
+
+	public function __construct()
+	{
+		echo '<link rel="stylesheet" type="text/css" href="css/calendar.css" />
+		<script src="script/calendar.js" language="javascript"></script>';
+	}
+
+
 	protected function get_month_days($year,$month)
 	{
 		$number[0] = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -44,7 +49,7 @@ class calendar
 		$month = func_get_arg(1);
 		$n = $this -> get_month_days( $year, $month );	// month length and first day of week
 		$table = "
-		<div class='calendar_holder' style='display: none;'>
+		<div class='calendar_holder' style='display: none;' month='".$month."'>
 		<table class='calendar'><caption>".$year.".".$this -> honapok[$month] ."</caption>
 		<tbody>
 		<tr>";
@@ -54,7 +59,7 @@ class calendar
 		}
 		$table .= "</tr><tr>";
 		for($i=1;$i<$n[1];$i++)				//add empty cells to the start
-			$table .= "<td style='background-color:white;'></td>";
+		$table .= "<td style='background-color:white;'></td>";
 		
 		for($j=1,$i;$j<=$n[0];$j++,$i++) 
 		{
@@ -84,52 +89,70 @@ class calendar
 		}
 		// add empty cells in the end
 		if($i != 1) for($i;$i<=7;$i++) $table .= "<td style='background-color:white;'></td>";
-		$table .= "</tr>
-		</tbody></table>
-		</div>";
-		echo $table;
-	}
-	public function Start($arr)
-	{
-		echo '<div class="Calendar_Wrapper">';
-		switch(count($arr))
+			$table .= "</tr>
+			</tbody></table>
+			</div>";
+			echo $table;
+		}
+		public function calendar()
 		{
-			case 1:
+			$arr = func_get_args();
+			echo '<div class="Calendar_Wrapper">';
+			switch(count($arr))
+			{
+				case 0:
 				{
 					for($i=1;$i<13;$i++)
-					$this -> Create_Calendar($arr[0],$i);
+						$this -> Create_Calendar(date("Y"),$i);
 				}break;
-			case 2:
+				case 1:
+				{
+					for($i=1;$i<13;$i++)
+						$this -> Create_Calendar($arr[0],$i);
+				}break;
+				case 2:
 				{
 					$this -> Create_Calendar($arr[0],$arr[1]);
 				}break;
-			case 3:
-			{
-				$year = $arr[0];
-				$month = $arr[1];
-				for($i=0;$i<$arr[2];$i++,$month++)
+				case 3:
 				{
-					if($month > 12)
+					$year = $arr[0]; // év
+					$passedMonths = $arr[1]; // a mostani hónaptól visszafelé mennyit akar megjeleníteni
+					$nextMonths = $arr[2]; // a mostani hónaptól előre mennyit akar megjeleníteni
+					$showMonths = $passedMonths + $nextMonths + 1;	// a megjelenítendő hónapok száma
+					unset($nextMonths);
+					if($passedMonths >= date("n"))
+					{
+						$sv = abs(date("n")-$passedMonths);
+						$year -= intval($sv/12)+1;
+						$passedMonths = 12-$sv%12;
+						unset($sv);
+					}
+					else $passedMonths = date("n") - $passedMonths;
+					for($i=0; $i<$showMonths; $i++,$passedMonths++)
+					{
+						if($passedMonths > 12)
 						{
-							$month = 1;
+							$passedMonths = 1;
 							$year++;
 						}
-					$this -> Create_Calendar($year,$month);
+						$this -> Create_Calendar($year,$passedMonths);
+					}
+					unset($passedMonths, $year, $showMonths);
+				}break;
+				default:
+				{
+					$this -> Start(array(date("Y")));
 				}
-			}break;
-			default:
-			{
-				echo "Too many or too less parameters for the calendar modul";
-				die();
 			}
-		}
-		echo '
+			unset($arr);
+			echo '
 			<div class="change_button_holder">
-				<input type="button" value="Előző" class="left_arrow"/>
-				<input type="button" value="Következő" class="right_arrow"/>
+			<input type="button" value="Előző" class="left_arrow"/>
+			<input type="button" value="Következő" class="right_arrow"/>
 			</div></div>
 			<div class="selectdaysholder"><div id="selectdays"></div><input type="button" id="send_days" class="Send_Days" value="Elküld" /></div>
 			';
+		}
 	}
-}
-?>
+	?>

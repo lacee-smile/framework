@@ -1,25 +1,46 @@
 <?php
 class user extends Capsule
 {
-	public $name = "";
-	public $pw = "";
-	public $iroda = "";
-	public $beosztas = "";
-	public $config = [];
+    public $name = "def value";
+    public $pw;
+    public $iroda;
+    public $beosztas;
+    public $username;
+    public $settings;
 
-	public function Save($arr)
+	public function login()
 	{
-		/*$_SESSION["logged_in"] = true;
-		$_SESSION["psw"] = $result[0];
-		$_SESSION["name"] = $result[1];
-		$_SESSION["beosztas"] = $result[2];
-		$_SESSION["iroda"] = $result[3];*/
-		$this -> name = $arr[1];
-		$this -> pw = $arr[0];
-		$this -> beosztas = $arr[2];
-		$this -> iroda = $arr[3];
-		$this -> config = $this -> GetConf($this -> iroda);
-	}
+        $result = $this -> LoginRequest($_POST['username'], hash("md5", $_POST["password"]));
+		if($result)
+		{
+            $_SESSION['user'] = $result;
+           // print_pre($_SESSION, true);
+            /*
+            $this -> name = $result['name'];
+            $this -> pw = $result['password'];
+            $this -> beosztas = $result['beosztas'];
+            $this -> iroda = $result['iroda_id'];
+            $this -> username = $result['username'];
+            $this -> settings = $result['settings'];
+            // save to session with specific key, and hashed values
+            $_SESSION["username"] = $result['username'];*/
+            session_write_close();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+    }
 
+    public function getUser()
+    {
+        return array(
+            "username" =>   $this -> username,
+            "name"  =>  $this -> name,
+            "beosztas"  =>  $this -> beosztas
+        );
+    }
 }
+
 ?>

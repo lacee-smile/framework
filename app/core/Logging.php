@@ -1,6 +1,11 @@
 <?php
-class Logging //extends Model
+use App\Core\Capsule;
+class Logging extends Capsule
 {
+    // alakítsd át, hogy ne fájlba mentse, hanem adatbázisba
+    // adatbázis tábla neve: log_all
+    // használd a $this -> Upload(5, $datas = []);
+    // return value (debughoz) az sql lesz.
 	private $file = null;
 	public $log_type = null;
 

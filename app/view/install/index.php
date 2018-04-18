@@ -1,13 +1,6 @@
 <?php
 class install_view
 {
-	public function heading()
-	{
-		echo '
-		<script language="javascript" src="script/jQuery.js"></script>
-		<script language="javascript" src="script/install.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/install.css"/>';
-	}
 	public function ServerDatasForm()
 		{
 			$str = '
@@ -22,7 +15,7 @@ class install_view
 				<div class="EndText indexTitle" id="end"></div>
 			</div>
 			';
-			echo $str;
+            echo $str;
 		}
 
 
@@ -58,6 +51,5 @@ class install_view
 		$str = '<div class="EndText indexTitle" id="end">Az install fájl törléséhez manuális beavatkozásra van szükség!</div>';
 		return $str;
 	}
-
 }
 ?>

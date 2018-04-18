@@ -1,0 +1,6 @@
+{
+    "require": {
+        "eluceo/ical": "^0.11.4",
+        "google/apiclient": "^2.0"
+    }
+}

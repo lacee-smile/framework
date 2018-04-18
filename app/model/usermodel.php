@@ -1,29 +1,30 @@
 <?php
-class usermodel extends Capsule
+class usermodel //extends login
 {
-	/*public $name = "";
-	public $pw = "";
-	public $iroda = "";
-	public $beosztas = "";
-	public $username = "";
-	public $config = [];*/
+    protected $name = "";
+    protected $pw = "";
+    protected $iroda = "";
+    protected $beosztas = "";
+    protected $username = "";
+    protected $settings = [];
 
 	public function Save($arr)
 	{
-		session_start();
-		/*$this -> name = $arr[1];
-		$this -> pw = $arr[0];
-		$this -> beosztas = $arr[2];
-		$this -> iroda = $arr[3];
-		$this -> username = $arr[5];
-		$this -> config = $this -> GetConf();*/
-		$_SESSION['name'] = $arr[1];
-		$_SESSION['pw'] = $arr[0];
-		$_SESSION['beosztas'] = $arr[2];
-		$_SESSION['iroda'] = $arr[3];
-		$_SESSION['username'] = $arr[5];
-		$_SESSION['config'] = $this -> GetConf();
-		session_write_close();
+        
+		//session_start();
+		$this -> name = $arr['name'];
+		$this -> pw = $arr['password'];
+		$this -> beosztas = $arr['beosztas'];
+		$this -> iroda = $arr['iroda_id'];
+		$this -> username = $arr['username'];
+        $this -> settings = $arr['settings'];
+		/*$_SESSION['name'] = $arr['name'];
+		$_SESSION['pw'] = $arr['pw'];
+		$_SESSION['beosztas'] = $arr['beosztas'];
+		$_SESSION['iroda'] = $arr['iroda'];
+        $_SESSION['username'] = $arr['username'];
+        $_SESSION['config'] = $arr['config'];*/
+		//session_write_close();
 	}
 
 }
