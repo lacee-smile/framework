@@ -1,3 +1,4 @@
-app/vendor/
 .vscode/
 vendor/
+README.md
+app/config.php
