@@ -1,12 +1,9 @@
 <?php
 namespace App\Core;
 
-class Controller
+abstract class Controller
 {
-    /*public $formName = null;
-    public $formID = 0;
-    public $AjaxHandler = null;*/
-    protected $view = null;
+    public $view = null;
 	protected $model = null;
 	protected $component = [];
 	
@@ -15,12 +12,6 @@ class Controller
 		require_once Model . $model . '.php';
         return new $model();
     }*/
-    public function __construct()
-    {
-		if(CustomBackTrace) echo "Controller/Controller()</br>";
-        echo "Controller";
-        //$this -> view();
-    }
 
     public function inject($injectable)
     {
@@ -39,49 +30,19 @@ class Controller
 
 	public function moduls($moduls = [])
 	{
-		if(gettype($moduls) != 'array')
+		if(!is_array($moduls))
 		{
 			require_once Modul . $moduls . ".php";
 			return new $moduls();
 		}
         else
         {
-		foreach($moduls as $modul)
-		{
-			require_once Modul . $modul . ".php";
-        }
-    }
+			foreach($moduls as $modul)
+			{
+				require_once Modul . $modul . ".php";
+			}
+		}
 	}
-
-	/*public function CSS($files)
-	{
-		if(count($files) == 0)
-		{
-			ConsoleAlert('This function called with 0 parameter. Ignoring!');
-		}
-		elseif(gettype($files) == 'string')
-		{
-			include CSS . $files . ".php";
-		}
-		else
-		foreach($files as $file)
-        include CSS . $file . ".php";
-	}
-	public function JS($files)
-	{
-		echo '<script language="javascript" src="script/jQuery.js"></script>';
-		if(count($files) == 0)
-		{
-			ConsoleAlert('This function called with 0 parameter. Ignoring!');
-		}
-		elseif(gettype($files) == 'string')
-		{
-			include JS . $files . ".php";
-		}
-		else
-		foreach($files as $file)
-		include JS . $file . ".php";
-    }*/
 
 	public function getQueryArray()
 	{
@@ -111,7 +72,6 @@ class Controller
     public function __destruct()
     {
 		if(CustomBackTrace) echo "Controller/__destruct()</br>";
-		//print_pre($this);
         $this -> view -> Render();
     }
 }

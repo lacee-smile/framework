@@ -3,3 +3,7 @@
     RewriteRule ^$ public/     [L]
     RewriteRule (.*) public/$1 [L]
 </IfModule>
+
+<IfModule mod_alias.c>
+    RedirectMatch 403 favicon.ico
+</IfModule>

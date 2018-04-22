@@ -1,4 +1,9 @@
-<?php if(true) { ?> 
+<?php
+class home
+{
+    public function __construct()
+    {
+ ?> 
         <style>
         body
         {
@@ -20,4 +25,6 @@
             color:white;
         }
         </style>
-<?php }?>
+<?php 
+   }
+}

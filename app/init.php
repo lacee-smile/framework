@@ -1,4 +1,6 @@
 <?php
+require "../vendor/autoload.php";
+
 require "core/Const.php";
 require_once "moduls/helpfunctions.php";
 require "database.php";
