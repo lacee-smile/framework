@@ -1,10 +1,10 @@
 <?php
 use App\Core\Error;
-register_shutdown_function('ErrorHandler');
-function ErrorHandler()
-{
-    Error::addPhpError(error_get_last());
-}
+// register_shutdown_function('ErrorHandler');
+// function ErrorHandler()
+// {
+//     Error::addPhpError(error_get_last());
+// }
 
 class App
 {
@@ -30,7 +30,6 @@ class App
 				unset($url[1]);
 			}
         }
-        
 		$this -> params = $url ? array_values($url) : [];
 		call_user_func_array([$this -> controller, $this -> method], $this -> params);
 		if(DEBUG)

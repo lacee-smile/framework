@@ -3,7 +3,7 @@ class admin_view extends Controller
 {
 	public function __construct()
 	{
-		$this -> CSS(array("userglobal","admin"));
+		//$this -> CSS(array("userglobal","admin"));
 		/*print_c(__FUNCTION__,true);
 		echo "<form method='post' id='addOffice'>";*/
 	}
@@ -76,11 +76,11 @@ class admin_view extends Controller
 		return $str;
 	}
 
-	public function __destruct()
-	{
-        echo '</form>';
-        $this -> view('logoutbutton');
-		$this -> JS("admin");
-	}
+	// public function __destruct()
+	// {
+    //     echo '</form>';
+    //     $this -> view('logoutbutton');
+	// 	$this -> JS("admin");
+	// }
 }
 ?>

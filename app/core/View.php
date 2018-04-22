@@ -33,7 +33,6 @@ class View
                 {
                     include_once CSS.$css;
                     $className = new $className();
-                    //$html .= $class -> getCssFromPhp();
                 }
 
             }

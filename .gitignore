@@ -2,3 +2,4 @@
 vendor/
 README.md
 app/config.php
+app/database.php
