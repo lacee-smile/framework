@@ -1,9 +1,6 @@
 <?php
-namespace App\Core;
-
-use App\Core\Model\Log;
-
-class Logging
+use App\Core\Capsule;
+class Logging extends Capsule
 {
     // alakítsd át, hogy ne fájlba mentse, hanem adatbázisba
     // adatbázis tábla neve: log_all
@@ -12,7 +9,7 @@ class Logging
 	private $file = null;
 	public $log_type = null;
 
-	public function addLog($datas)
+	public function WriteLog($datas)
 	{
 		$message = "";
 		switch($this -> log_type)
@@ -51,12 +48,15 @@ class Logging
 			}
 
 		$date = date("Y.m.d H:i:s");
-		$this -> addError($date . " " . $message);
+		$this -> Write_Error($date . " " . $message);
 		unset($date,$message);
 	}
-	private function addError($message)
+	private function Write_Error($message)
 	{
-
+		$file = fopen("../app/logs/" . $this -> file . ".log","a");
+        fwrite($file,$message.PHP_EOL);
+		fclose($file);
+		unset($file);
 	}
 }
 ?>

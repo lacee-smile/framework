@@ -13,8 +13,6 @@ define ("PublicDir", getcwd());
 define ("CSS", PublicDir .D. "css".D);
 define("JS", PublicDir .D. "script".D);
 define("Images", PublicDir .D. "images".D);
-define("rCSS", "css".D);
-define("rJS", "script".D);
 
 // program file paths
 define("AppDir", dirname(__DIR__).D);

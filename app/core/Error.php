@@ -1,6 +1,5 @@
 <?php
 namespace App\Core;
-use App\Core\Logging;
 
 class Error 
 {
@@ -8,27 +7,19 @@ class Error
     private static $message = null;
     private static $params = [];
 
-    public static function pageNotFound($file, $params)
-    {
-        echo "page not found";
-        self::setLevel(4);
-        $requs = ["type" => 1, "fileName" => $file];
-        self::setMessage($params??null);
-        self::add($requs);
-        $requs = null;
-        unset($requs);
-    }
-
     public static function add($params = [])
     {
         if(!CustomError) return;
 
         $debug = debug_backtrace();
         $errorMessage = [];
-        $errorMessage[0] = "Error in ".$debug[2]['class'] . " class";
-        $line = (int) $debug[1]['line'] -2 ;
+
+        $errorMessage[0] = "Error in ".$debug[1]['class'] . " class";
+        $line = (int) $debug[0]['line'] -2 ;
         $errorMessage[0] .= " on row ". $line .".";
 
+        //if(!empty($params['type']))
+        //{
         switch($params['type'])
         {
             case 1: // Missing file
@@ -47,6 +38,7 @@ class Error
                     }
                 }
         }
+        //}
 
         if(!empty(self::$errorLevel))
         {
@@ -55,29 +47,15 @@ class Error
 
         if(!empty(self::$message))
         {
-            $errorMessage[] = "Error message: " . self::$message;
+            $errorMessage[] = "Error message: " . self::$errorMessage;
         }
-        // use database loging instead of echo;
-        $errorMessage["branch"] = self::getGitBranch();
-        (new Logging) -> addLog($errorMessage);
-        //echo join("</br>",$errorMessage)."</br>";
+        echo join("</br>",$errorMessage)."</br>";
         if(self::$errorLevel > 3)
         {        
-            exit(100);
+            die();
         }
     }
-    
-    protected static function getGitBranch()
-    {
-        $shellOutput = [];
-        exec('git branch | ' . "grep ' * '", $shellOutput);
-        foreach ($shellOutput as $line) {
-            if (strpos($line, '* ') !== false) {
-                return trim(strtolower(str_replace('* ', '', $line)));
-            }
-        }
-        return null;
-    }
+
     public static function addPhpError($PHPError = [])
     {
         print_r($PHPError);

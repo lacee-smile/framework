@@ -7,16 +7,16 @@ class View
     private $js = [];
     private $css = [];
     private $viewVars = [];
-    private $partials = [];
 
     public function Render()
     {
-       echo $this -> getRender();
+        echo $this -> getRender();
     }
 
     public function getRender()
     {
         $html = "";
+        if(CustomBackTrace) echo "View/Render()</br>";
         if(!empty($this -> getCss()))
         {
             foreach($this -> getCss() as $css)
@@ -27,44 +27,54 @@ class View
                 unset($tmp);
                 if($extension == "css")
                 {
-                    $html .= '<link rel="stylesheet" type="text/css" href="'.rCSS.$css.'">';
+                    $html .= "<link type='text/css' href='".CSS.$css.".css' rel='styleseheet'>";
                 }
                 elseif($extension == "php")
                 {
                     include_once CSS.$css;
-                    new $className();
+                    $className = new $className();
                 }
 
             }
         }
+
         return $html;
     }
 
-    public function setVar($varName, $varVal)
+    public function setVar($varName = false, $varVal)
     {
         if(!$varName) return;
         $this -> $viewVars[$varName] = $varVal;
     }
 
-    public function getVars($varName = null)
+    public function getVar($varName = false)
     {
-        if(!$varName || !$viewVars[$varName])
-            return $this -> viewVars;
-        return $this -> viewVars[$varName];
+        if(!$varName || !$viewVars[$varName]) return;
+        return $viewVars[$varName];
     }
 
-    public function addJs($fileName = null)
+    public function getVars()
     {
-        if(!$fileName || !file_exists(JS.$fileName.".js"))
-            return;
-        $this -> js[] = rJS.$fileName;
+        return $this -> viewVars;
     }
 
-    public function addCss($fileName = null)
+    public function addJs($fileName = false)
     {
-        if(!$fileName || !file_exists(CSS.$fileName))
+        if(!$fileName) return;
+        $this -> js[] = JS.$fileName;
+    }
+
+    public function addCss($fileName = false)
+    {
+        if(CustomBackTrace) echo "View/addCss()</br>";
+        if(!$fileName) // empty filename
             return;
-        $this -> css[] = $fileName.".css";
+        if(!file_exists(CSS.$fileName.".php") && !file_exists(CSS.$fileName.".css")) // file not php and cot css
+        {
+            Error::add(['fileName'  =>  CSS.$fileName, 'type'   =>  1]);
+            return;
+        }
+        $this -> css[] = $fileName.".php" ?? $fileName.".css" ?? null;
     }
 
     public function getJs()
@@ -77,15 +87,9 @@ class View
         return $this -> css;
     }
 
-    public function getPartials()
+    public function getCssFromPhp()
     {
-		return $this->partials;
-	}
 
-    public function setPartial(string $partial = null)
-    {
-        if(!$partial) return;
-		$this->partials[] = $partial;
-	}
+    }
 }
 ?>
