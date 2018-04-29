@@ -1,13 +1,13 @@
 <?php
 namespace App\Core;
-use App\Core\Logging;
-
+//use App\Core\Logging;
+ 
 class Error 
 {
     private static $errorLevel = null;
     private static $message = null;
     private static $params = [];
-
+ 
     public static function pageNotFound($file, $params)
     {
         echo "page not found";
@@ -18,17 +18,17 @@ class Error
         $requs = null;
         unset($requs);
     }
-
+ 
     public static function add($params = [])
     {
         if(!CustomError) return;
-
+ 
         $debug = debug_backtrace();
         $errorMessage = [];
         $errorMessage[0] = "Error in ".$debug[2]['class'] . " class";
         $line = (int) $debug[1]['line'] -2 ;
         $errorMessage[0] .= " on row ". $line .".";
-
+ 
         switch($params['type'])
         {
             case 1: // Missing file
@@ -47,26 +47,26 @@ class Error
                     }
                 }
         }
-
+ 
         if(!empty(self::$errorLevel))
         {
             $errorMessage[] = "Error level is ".self::$errorLevel;
         }
-
+ 
         if(!empty(self::$message))
         {
             $errorMessage[] = "Error message: " . self::$message;
         }
         // use database loging instead of echo;
         $errorMessage["branch"] = self::getGitBranch();
-        (new Logging) -> addLog($errorMessage);
+        //(new Logging) -> addLog($errorMessage);
         //echo join("</br>",$errorMessage)."</br>";
         if(self::$errorLevel > 3)
         {        
             exit(100);
         }
     }
-    
+            
     protected static function getGitBranch()
     {
         $shellOutput = [];
@@ -82,7 +82,7 @@ class Error
     {
         print_r($PHPError);
     }
-
+    
     public static function setLevel($level)
     {
         if(!$level)
@@ -91,7 +91,7 @@ class Error
         }
         self::$errorLevel = $level;
     }
-
+    
     public static function setMessage($message)
     {
         if(!$message)

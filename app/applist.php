@@ -1,0 +1,5 @@
+<?php
+$app = [
+	"admin",
+	"home"
+];

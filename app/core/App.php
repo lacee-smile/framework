@@ -44,7 +44,6 @@ class App
 			$app -> $func();
 			$app = $func = null;
 			unset($app, $func);
-			//$this -> app -> $this -> $init();
 		}
 
 		if(isset($url[1]))

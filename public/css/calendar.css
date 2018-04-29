@@ -1,7 +1,3 @@
-body
-{
-	background-color: wheat; 
-}
 .Calendar_Wrapper
 {
 	position:absolute;
