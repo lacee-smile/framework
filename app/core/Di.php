@@ -1,15 +1,25 @@
 <?php
 namespace App\Core;
 
-use App\Core\Capsule;
+//use App\Core\Capsule;
 
-class di extends Capsule
+class dependecyInjector //extends Capsule
 {
-    // store objects and check objects validity
+    private $param = [];
+    // important thing
+    // this object only store variables. Ddo NOT doing else
+    // maybe private static functions as well... :D
+    public function __construct()
+    {
+        echo "say \"hi Di\"";
+    }
 
-}
-
-class user extends Capsule implements di
-{
-    
+    public function __call($name, $argument)
+    {
+        echo "teszt";
+    }
+    public function addobj($name, $argument)
+    {
+        echo "addobj";
+    }
 }

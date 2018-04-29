@@ -3,7 +3,7 @@ namespace App\Core;
 
 abstract class Controller
 {
-    public $view = null;
+	public $view = null;
 	protected $model = null;
 	protected $component = [];
 	
@@ -13,19 +13,21 @@ abstract class Controller
         return new $model();
     }*/
 
-    public function inject($injectable)
-    {
-		if(CustomBackTrace) echo "Controller/inject()</br>";
-        $class = get_called_class();
-        require_once Control.$class.D.$injectable.D.$injectable.".php";
-        $className = $class.ucwords($injectable);
-        $this -> view = new $className();
-    }
-
-	public function view()
+	public function view(string $filename = "view")
 	{
-		if(CustomBackTrace) echo "Controller/view()</br>";
-        $this -> inject("view");
+		if(!$filename) return;
+		$class = get_called_class();
+		$file = AppDir.$class.D."view".D.$filename.".php";
+		if(!file_exists($file))
+			$filename = $class;	// if called not exists, set the classname as default
+        require_once AppDir.$class.D."view".D.$filename.".php";
+        $className = $class.ucwords($filename);
+        $this -> view = new $className();
+	}
+
+	public function js()
+	{
+        $this -> inject("javascript");
     }
 
 	public function moduls($moduls = [])
@@ -71,7 +73,6 @@ abstract class Controller
 	}
     public function __destruct()
     {
-		if(CustomBackTrace) echo "Controller/__destruct()</br>";
         $this -> view -> Render();
     }
 }
