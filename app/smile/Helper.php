@@ -1,24 +1,37 @@
 <?php
+// if you want to create a custom function to use all over on your system, write to here.
 namespace App\Smile;
-use App\Smile\Model;
 
-class Helper extends Model
+trait Helper 
 {
-    public function __construct()
+    public function toArray()
     {
-        $this -> setSource("log");
+        if(count($this -> getVar('result')) == 1)
+            return $this -> result[0];
+        return $this -> result;
     }
 
-    public function teszt()
+    public function indexTo(string $indexCol = 'id')
     {
-        $result = $this -> columns()
-        -> conditions("user_id between 8 and 100")
-        -> limit(3)
-        -> order("id desc")
-        -> getQuery()
-        -> execute()
-        -> toArray();
-        var_dump($result);
+        $tmp = [];
+        foreach($this -> result as $row)
+        {
+            $tmp[$row[$indexCol]] = $row;
+        }
+        return $tmp;
     }
-    
+
+    public function setVar($name = "", $value = 0)
+    {
+        if(!$name || !$value)
+            return;
+        $this -> $name = $value;
+    }
+
+    public function getVar($name = "")
+    {
+        if(!$name)
+            return;
+        return $this -> $name;
+    }
 }

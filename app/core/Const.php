@@ -23,7 +23,7 @@ define("Model", AppDir."model".D);
 define("Modul", AppDir."moduls".D);
 
 //logging variables
-define("Log", AppDir."logs".D);
+//define("Log", AppDir."logs".D);
 define("DEBUG", 0);
 define("CustomError", 1);
 define("CustomBackTrace", 0);

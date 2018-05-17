@@ -1,5 +1,6 @@
 <?php
-$app = [
+$applist = [
 	"admin",
-	"home"
+	"home",
+	"core",
 ];

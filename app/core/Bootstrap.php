@@ -1,14 +1,8 @@
 <?php
 
-use App\Core\Error;
+use App\Smile\Frame;
 
-// register_shutdown_function('ErrorHandler');
-// function ErrorHandler()
-// {
-//     Error::addPhpError(error_get_last());
-// }
-
-class App
+class Bootstrap extends Frame
 {
 	public $app = "home";
 	protected $method = "index";
@@ -22,20 +16,24 @@ class App
 		if(!$url[0])
 		{
 			echo "index page";
-			exit(255);
 		}
 
 		$this -> app = $url[0];
 		unset($url[0]);
 
-		if(!file_exists(self::getAppFile($this -> app)))
-		{
-			Error::pageNotFound($this -> app, "file must be in ". self::getAppFile($this -> app));
-		}
+		// global $applist;
+		// if(!in_array($this -> app, $applist)
+		// 				or
+		// !self::getAppFile($this -> app))
+		// {
+		// 	$this -> pageNotFound();
+		// }
 		
 		require_once self::getAppFile($this -> app);
-		$appName = $this -> app . "App";
-		$this -> app = new $appName();
+		
+		$this -> autoloader($this -> app);
+
+		$this -> app = new App();
 
 		if(method_exists($this -> app, $this -> init))
 		{
@@ -72,6 +70,7 @@ class App
     
     private static function getAppFile($fileName)
     {
-        return AppDir.$fileName.D.'App.php';
+		$file = AppDir.$fileName.D.'App.php';
+        return file_exists($file) ? $file : false;
     }
 }

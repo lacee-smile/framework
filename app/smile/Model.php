@@ -1,7 +1,10 @@
 <?php
 namespace App\Smile;
-class Model
+
+abstract class Model
 {
+    use Helper;
+    
     private $source = null;
     private $columns = "*";
     private $condition = "";
@@ -12,8 +15,9 @@ class Model
     private $having = null;
     private $group = null;
     private $PDOobject = null;
-    private $query = null;
+    public $query = null;
     public $result = null;
+    protected $firstId = null;
 
     public function getQuery()
     {
@@ -33,6 +37,8 @@ class Model
 
     private function createPDO()
     {
+        if(!empty($sql))
+            $this -> query = $sql;
         $this -> PDOobject = $this -> connect() -> prepare($this -> query);
         return $this;
     }
@@ -44,38 +50,45 @@ class Model
         return $this;
     }
 
-    public function columns(string $columns = "*")
+    public function columns(string $columns = "*", $isDefault = true)
     {
-        if(empty($columns)) return $this;
-        $this -> columns =  "SELECT {$columns}
-                FROM " . $this -> getSource();
+        if(empty($columns))
+            return $this;
+        if($isDefault)
+            $this -> columns =  "SELECT {$columns} FROM " . $this -> getSource();
+        else
+            $this -> columns = $columns;
         return $this;
     }
 
     public function conditions(string $conditions = "")
     {
-        if(empty($conditions)) return $this;
-        $this -> conditions = " WHERE " . $conditions;
+        if(empty($conditions))
+            return $this;
+        $this -> condition = " WHERE " . $conditions;
         return $this;
     }
 
     public function bind(array $bind = [])
     {
-        if(empty($bind)) return $this;
+        if(empty($bind))
+            return $this;
         $this -> bind = $bind;
         return $this;
     }
 
     public function order(string $order = "")
     {
-        if(empty($order)) return $this;
+        if(empty($order))
+            return $this;
         $this -> order = " ORDER BY " . $order;
         return $this;
     }
 
     public function limit(int $limit = 0)
     {
-        if(empty($limit)) return $this;
+        if($limit == 0)
+            return $this -> limit = null;
         $this -> limit = " LIMIT " . $limit;
         return $this;
     }
@@ -89,7 +102,9 @@ class Model
 
     public function join(string $table, string $connectField, string $alias = null)
     {
-        if(empty($table)) return $this;
+        if(empty($table))
+            return $this;
+        $table = self::getTableName($table);
         $alias = !empty($alias) ? "as {$alias}" : "";
         $this -> joins[] = " INNER JOIN {$table} {$alias} ON {$connectField}";
         return $this;
@@ -97,7 +112,9 @@ class Model
 
     public function leftJoin(string $table, string $connectField, string $alias = null)
     {
-        if(empty($table)) return $this;
+        if(empty($table))
+            return $this;
+        $table = self::getTableName($table);
         $alias = !empty($alias) ? "as {$alias}" : "";
         $this -> joins[] = " LEFT JOIN {$table} {$alias} ON {$connectField}";
         return $this;
@@ -105,7 +122,9 @@ class Model
 
     public function rightJoin(string $table, string $connectField, string $alias = null)
     {
-        if(empty($table)) return $this;
+        if(empty($table))
+            return $this;
+        $table = self::getTableName($table);
         $alias = !empty($alias) ? "as {$alias}" : "";
         $this -> joins[] = " RIGHT JOIN {$table} {$alias} ON {$connectField}";
         return $this;
@@ -113,18 +132,18 @@ class Model
 
     public function having(string $having = null)
     {
-        if(empty($having)) return $this;
+        if(empty($having))
+            return $this;
         $this -> having = " HAVING " . $having;
         return $this;
     }
     
 	private function connect()
 	{
-        //global $server, $db, $user, $pw;
-        $server = "localhost";
-        $db = "framework";
-        $user = "root";
-        $pw = "root";
+        $server = SERVER;
+        $db = DATABASE;
+        $user = USER;
+        $pw = PASSWORD;
 		try
 		{
 			$conn = new \PDO("mysql:host=$server;dbname=$db;charset=utf8", $user, $pw);
@@ -133,15 +152,137 @@ class Model
     	}
 		catch(\PDOException $e)
 		{
-			echo "Connecion failed: " . $e -> getMessage();
+			(new Error) -> connectionError($e -> getMessage());
 		}
     }
 
-    public function toArray()
+    public function getTableName($nameSpace)
     {
-        if(count($this -> result) == 1)
-            return $this -> result[0];
-        return $this -> result;
+        $path = explode('\\', $nameSpace);
+        return strtolower(array_pop($path));
+    }
+
+    public function find($condition = null, array $bind = [])
+    {
+        return $this
+        -> columns()
+        -> conditions($condition)
+        -> bind($bind)
+        -> getQuery()
+        -> execute();
+    }
+
+    public function findFirst($condition = null, array $bind = [])
+    {
+        if(empty($condition))
+            return $this;
+        if(is_int($condition)) 
+            $condition = " id = {$condition}";
+        $result = $this
+        -> columns()
+        -> conditions($condition)
+        -> bind($bind)
+        -> limit(1)
+        -> getQuery()
+        -> execute();
+        $this -> firstId = $this -> result[0]['id'];
+        return $result;
+    }
+
+    private function update($key, $value)
+    {
+        $table = $this -> getSource();
+        $str = $this -> updateStr($key, $value);
+        $head = "UPDATE {$table} SET {$str}";
+        $this -> columns($head, false);
+        $this -> limit(0);
+    }
+    
+    private function updateOne($key, $value)
+    {
+        $this -> update($key, $value);
+        $this -> conditions('id = ' . $this -> firstId);
+        return $this;
+    }
+
+    private function updateStr($keys, $values)
+    {
+        $tmp = [];
+        for($i = 0; $key = $keys[$i] and $value = $values[$i]; $i ++)
+        {
+            $tmp[$i] = "{$key} = '{$value}'";
+        }
+        $tmp = join(", ", $tmp);
+        return $tmp;
+    }
+
+    public function save($update, $optional = null, $bind = [])
+    {
+        if(!empty($bind))
+            $this -> bind = $bind;
+        
+        if(is_string($update) and is_string($optional))
+        {
+            // this works with only findFirst, beacuse it set $this -> firstId;
+            $this -> updateOne($update, $optional);
+        }
+
+        elseif(is_array($update))
+        {
+            // this works with only findFirst, beacuse it set $this -> firstId;
+            $keys = array_keys($update);
+            $values = array_values($update);
+            $this -> updateOne($keys, $values);
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /*elseif(is_array($update))
+        {
+            $sqlBody = [];
+            foreach($update as $key => $value)
+            {
+                $sqlBody[] = $key . " = '" . $value . "'";
+            }
+            $sqlBody = join(", ", $sqlBody);
+            $sql = $sqlHead . $sqlBody;
+        }
+        $this -> createPDO($sql) -> update();*/
+
+        // if($this -> firstId)
+        //     $ids = $this -> firstId;
+        // else
+        //     $ids = keys($array);
+        // // ids, the updateable rows id
+        // foreach($ids as $id)
+        // {
+        //     $sql = $sqlHead . " SET {$id} = {$id}";
+        // }
+        
+        // this function must work with multiple values, update and insert az well.
+       /* if(is_int($condition))
+            $condition = " id = {$condition}";
+        elseif(!empty($this -> firstId))
+            $condition = " id = {$condition}";
+        $map = array_map($update);
+        var_dump(null,$map);
+        die();
+        $table = $this -> getSource();
+        $sql = "UPDATE {$table} SET {$update[$key]} = {$update[$value]} WHERE {$condition}";
+        $this -> query = $sql;
+        $this -> createPDO() -> execute();*/
+        $sql = $this -> getQuery();
+        var_dump($sql);
+        die();
+        $this -> PDOobject -> execute($this -> bind);
     }
 
     /**

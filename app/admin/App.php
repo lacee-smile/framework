@@ -1,10 +1,12 @@
 <?php
 
-class adminApp
+use App\Admin\Model\Log;
+class App
 {
     public function initialize()
     {
         echo "init teszt</br>";
+        //Log::columns();
     }
 
     public function index()

@@ -5,5 +5,5 @@
 </IfModule>
 
 <IfModule mod_alias.c>
-    RedirectMatch 0 favicon.ico
+    RedirectMatch 404 favicon.ico
 </IfModule>
