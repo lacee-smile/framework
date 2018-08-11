@@ -4,22 +4,22 @@ class App
 {
     public function initialize()
     {
-        echo "init teszt</br>";
+        echo "home init teszt</br>";
         //Log::columns();
     }
 
     public function index()
     {
-        echo "index action</br>";
+        echo "home index action</br>";
     }
 
     public function __construct()
     {
-        echo "construct</br>";
+        echo "home construct</br>";
     }
 
     public function teszt()
     {
-        echo "teszt action</br>";
+        echo "home teszt action</br>";
     }
 }

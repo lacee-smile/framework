@@ -1,25 +1,26 @@
 <?php
 
+use App\Error\Model\Log;
 class App
 {
     public function initialize()
     {
-        echo "init teszt</br>";
+        echo "error init teszt</br>";
         //Log::columns();
     }
 
     public function index()
     {
-        echo "index action</br>";
+        echo "error index action</br>";
     }
 
     public function __construct()
     {
-        echo "construct</br>";
+        echo "error construct</br>";
     }
 
     public function teszt()
     {
-        echo "teszt action</br>";
+        echo "error teszt action</br>";
     }
 }

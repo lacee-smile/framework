@@ -1,8 +1,6 @@
 <?php
 namespace App\Core;
 
-use App\Core\Model\Log;
-
 class Logging
 {
     // alakítsd át, hogy ne fájlba mentse, hanem adatbázisba

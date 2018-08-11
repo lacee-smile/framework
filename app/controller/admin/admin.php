@@ -1,9 +1,5 @@
 <?php
 
-use App\Core\Capsule;
-use App\Core\Controller;
-use App\Controller\View;
-
 class admin extends Controller
 {
 	public function __construct()

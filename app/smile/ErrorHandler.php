@@ -10,6 +10,7 @@ class ErrorHandler extends Model
 
     public function __construct()
     {
+        return;
         $this -> setSource('log');
         $error = func_get_args();
         if(!empty($error))

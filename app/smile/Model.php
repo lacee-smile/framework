@@ -1,9 +1,11 @@
 <?php
 namespace App\Smile;
 
-abstract class Model
+use App\Smile\Connect\Adapter;
+
+abstract class Model extends Adapter
 {
-    use Helper;
+    //use Helper;
     
     private $source = null;
     private $columns = "*";
@@ -31,7 +33,7 @@ abstract class Model
 
         $sql = preg_replace('/\s+/', ' ', trim($sql));
         $this -> query = $sql;
-        $this -> createPDO();
+        
         return $this;
     }
 
@@ -45,6 +47,7 @@ abstract class Model
 
     public function execute()
     {
+        $this -> createPDO();
         $this -> PDOobject -> execute($this -> bind);
         $this -> result = $this -> PDOobject -> fetchAll(\PDO::FETCH_ASSOC); 
         return $this;
@@ -110,7 +113,7 @@ abstract class Model
         return $this;
     }
 
-    public function leftJoin(string $table, string $connectField, string $alias = null)
+    public function leftJoin(stinrg $table, string $connectField, string $alias = null)
     {
         if(empty($table))
             return $this;
@@ -138,28 +141,11 @@ abstract class Model
         return $this;
     }
     
-	private function connect()
-	{
-        $server = SERVER;
-        $db = DATABASE;
-        $user = USER;
-        $pw = PASSWORD;
-		try
-		{
-			$conn = new \PDO("mysql:host=$server;dbname=$db;charset=utf8", $user, $pw);
-			$conn -> setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			return $conn;
-    	}
-		catch(\PDOException $e)
-		{
-			(new Error) -> connectionError($e -> getMessage());
-		}
-    }
-
     public function getTableName($nameSpace)
     {
-        $path = explode('\\', $nameSpace);
-        return strtolower(array_pop($path));
+        return $nameSpace -> getSource();
+        /*$path = explode('\\', $nameSpace);
+        return strtolower(array_pop($path));*/
     }
 
     public function find($condition = null, array $bind = [])

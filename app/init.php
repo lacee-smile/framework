@@ -1,15 +1,16 @@
 <?php
+require "smile/AutoLoad.php";
 require "core/Const.php";
 require "config.php";
-require_once "moduls/helpfunctions.php";
+// include "moduls/helpfunctions.php";
 require "applist.php";
-require "smile/Frame.php";
+
  
-//require "../vendor/autoload.php";
+// //require "../vendor/autoload.php";
  
-//require_once "core/Capsule.php";
-//include "core/Di.php";
-//require_once "core/Logging.php";
-require_once "core/Controller.php";
-require_once "core/View.php";
-require_once "core/Bootstrap.php";
+// //require_once "core/Capsule.php";
+// //include "core/Di.php";
+// //require_once "core/Logging.php";
+// require_once "core/Controller.php";
+// require_once "core/View.php";
+require_once "Bootstrap.php";

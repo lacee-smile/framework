@@ -2,8 +2,6 @@
 /*
 *	default oldalt nem bejelentkezett felhasználóknak
 */
-use App\Core\Controller;
-use App\Core\View;
 
 
 // change this to router

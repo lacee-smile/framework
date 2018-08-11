@@ -1,8 +1,6 @@
 <?php
 namespace App\Core;
 
-//use App\Core\Capsule;
-
 class dependecyInjector //extends Capsule
 {
     private $param = [];

@@ -17,14 +17,16 @@ define("rCSS", "css".D);
 define("rJS", "script".D);
 
 // program file paths
+define("MainDir",dirname(__DIR__, 2));
 define("AppDir", dirname(__DIR__).D);
 define("Control", AppDir."controller".D);
 define("Model", AppDir."model".D);
 define("Modul", AppDir."moduls".D);
+define("FramePath", AppDir . "smile" . D);
 
 //logging variables
 //define("Log", AppDir."logs".D);
 define("DEBUG", 0);
-define("CustomError", 1);
+define("CustomError", 0);
 define("CustomBackTrace", 0);
 ?>

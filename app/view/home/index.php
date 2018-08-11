@@ -3,8 +3,6 @@
 //foreach($data as $func)
 //$view -> $func();
 
-use App\Core\View;
-
 class homeview extends View
 {
 

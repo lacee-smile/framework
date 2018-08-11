@@ -1,5 +1,5 @@
 <?php
-namespace App\Core;
+
 class Capsule
 {
 	public function Log($datas = [])

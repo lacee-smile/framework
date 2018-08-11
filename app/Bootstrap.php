@@ -1,8 +1,6 @@
 <?php
 
-use App\Smile\Frame;
-
-class Bootstrap extends Frame
+class Bootstrap
 {
 	public $app = "home";
 	protected $method = "index";
@@ -11,29 +9,25 @@ class Bootstrap extends Frame
 
 	public function __construct()
 	{
+		// grant module exists
+		global $applist;
 		$url = self::parseUrl();
-		
-		if(!$url[0])
+		if(in_array($url[0], $applist))
 		{
-			echo "index page";
+			$this -> app = $url[0];
 		}
-
-		$this -> app = $url[0];
-		unset($url[0]);
-
-		// global $applist;
-		// if(!in_array($this -> app, $applist)
-		// 				or
-		// !self::getAppFile($this -> app))
-		// {
-		// 	$this -> pageNotFound();
-		// }
 		
-		require_once self::getAppFile($this -> app);
-		
-		$this -> autoloader($this -> app);
+		// load module files
+		//$this -> autoloader($this -> app);
 
-		$this -> app = new App();
+
+		$route = Dispatcher::class;
+		var_dump($route);
+		die();
+		//$this -> app = new App();
+		new Controller();
+	
+		
 
 		if(method_exists($this -> app, $this -> init))
 		{
@@ -60,6 +54,7 @@ class Bootstrap extends Frame
 			print_c(debug_backtrace());
 		}
 	}
+
 	protected static function parseUrl()
 	{
 		if(isset($_GET["url"]))
