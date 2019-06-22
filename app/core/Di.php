@@ -3,13 +3,7 @@ namespace App\Core;
 
 use App\Core\Capsule;
 
-class di extends Capsule
+class di
 {
-    // store objects and check objects validity
-
-}
-
-class user extends Capsule implements di
-{
-    
+    // store objects
 }

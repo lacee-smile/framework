@@ -1,26 +1,36 @@
 <?php
+use Smile\Loader;
 use App\Core\Error;
+use App\Smile\Helper;
+use Smile\Object\Application;
 // register_shutdown_function('ErrorHandler');
 // function ErrorHandler()
 // {
 //     Error::addPhpError(error_get_last());
 // }
 
+spl_autoload_register( function ($className) {
+    (new Loader())->searchClassByName($className);
+});
 class App
 {
-	public $controller = "home";
+	public $controller = "admin";
 	protected $method = "index";
     protected $params = [];
 
 	public function __construct()
 	{
-        $url = self::parseUrl();
-		if(file_exists(self::getControlFile($url[0])))
+		$url = self::parseUrl();
+		$helper = new Helper();
+		//$helper->teszt();
+		//die();
+		$application = new Application();
+		if($appFile = file_exists(self::getAppFile($url[0])))
 		{
-			$this -> controller = $url[0];
+			$application->setApplication($appFile);
 			unset($url[0]);
         }
-		require_once self::getControlFile($this -> controller);
+		require_once self::getAppFile($this -> controller);
         $this -> controller = new $this -> controller;
 		if(isset($url[1]))
 		{
@@ -46,9 +56,9 @@ class App
 		}
     }
     
-    private static function getControlFile($fileName)
+    private static function getAppFile($fileName)
     {
-        return Control.$fileName.D.$fileName.'.php'; // vagy ez vagy az app.php a mappán belül
+        return AppDir.$fileName.D.'App.php'; // vagy ez vagy az app.php a mappán belül
     }
 }
 ?>

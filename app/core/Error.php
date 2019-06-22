@@ -9,7 +9,7 @@ class Error
 
     public static function add($params = [])
     {
-        if(!CustomError) return;
+        if(!CustomError) return false;
 
         $debug = debug_backtrace();
         $errorMessage = [];
@@ -26,7 +26,7 @@ class Error
                 $errorMessage[] = "Missing file: ".$params['fileName'];
                 break;
             case 2:
-                $errorMessage[] = "Not declared error meassage";
+                $errorMessage[] = "Not declared error message";
                 break;
             default:
                 if(!empty($params))
@@ -65,7 +65,7 @@ class Error
     {
         if(!$level)
         {
-            return;
+            return false;
         }
         self::$errorLevel = $level;
     }
@@ -74,7 +74,7 @@ class Error
     {
         if(!$message)
         {
-            return;
+            return false;
         }
         self::$message = $message;
     }

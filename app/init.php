@@ -1,6 +1,9 @@
 <?php
-require "../vendor/autoload.php";
-
+if(file_exists("../vendor/autoload.php"))
+{
+    require "../vendor/autoload.php";
+}
+require "smile/smile.php";
 require "core/Const.php";
 require_once "moduls/helpfunctions.php";
 require "database.php";

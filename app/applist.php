@@ -1,5 +1,7 @@
 <?php
-$app = [
+return [
 	"admin",
-	"home"
+	"core",
+	"dashboard",
+	"smile",
 ];

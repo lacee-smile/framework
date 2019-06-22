@@ -43,13 +43,13 @@ class View
 
     public function setVar($varName = false, $varVal)
     {
-        if(!$varName) return;
+        if(!$varName) return false;
         $this -> $viewVars[$varName] = $varVal;
     }
 
     public function getVar($varName = false)
     {
-        if(!$varName || !$viewVars[$varName]) return;
+        if(!$varName || !$viewVars[$varName]) return false;
         return $viewVars[$varName];
     }
 
@@ -60,7 +60,7 @@ class View
 
     public function addJs($fileName = false)
     {
-        if(!$fileName) return;
+        if(!$fileName) return false;
         $this -> js[] = JS.$fileName;
     }
 
@@ -68,11 +68,11 @@ class View
     {
         if(CustomBackTrace) echo "View/addCss()</br>";
         if(!$fileName) // empty filename
-            return;
+            return false;
         if(!file_exists(CSS.$fileName.".php") && !file_exists(CSS.$fileName.".css")) // file not php and cot css
         {
             Error::add(['fileName'  =>  CSS.$fileName, 'type'   =>  1]);
-            return;
+            return false;
         }
         $this -> css[] = $fileName.".php" ?? $fileName.".css" ?? null;
     }

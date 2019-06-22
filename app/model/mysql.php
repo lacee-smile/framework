@@ -1,4 +1,7 @@
 <?php
+
+use App\Core\Capsule;
+
 class mysql extends Capsule
 {
 	public $db = "";

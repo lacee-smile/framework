@@ -16,13 +16,12 @@ define("Images", PublicDir .D. "images".D);
 
 // program file paths
 define("AppDir", dirname(__DIR__).D);
-define("Control", AppDir."controller".D);
+/* define("Control", AppDir."controller".D);
 define("Model", AppDir."model".D);
-define("Modul", AppDir."moduls".D);
+define("Modul", AppDir."moduls".D); */
 
 //logging variables
 define("Log", AppDir."logs".D);
-define("DEBUG", 0);
+define("DEBUG", 1);
 define("CustomError", 1);
 define("CustomBackTrace", 0);
-?>

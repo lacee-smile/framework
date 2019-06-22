@@ -124,7 +124,7 @@ class Model
         $server = "localhost";
         $db = "framework";
         $user = "root";
-        $pw = "root";
+        $pw = "";
 		try
 		{
 			$conn = new \PDO("mysql:host=$server;dbname=$db;charset=utf8", $user, $pw);
